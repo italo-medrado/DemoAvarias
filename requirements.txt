@@ -1,4 +1,11 @@
+<<<<<<< HEAD
 pandas
 streamlit
 plotly
 openpyxl  # For reading .xlsm files
+=======
+pandas
+streamlit
+plotly
+openpyxl  # For reading .xlsm files
+>>>>>>> dc1a9cf5257e16fa15c710c1367449825cd5d2cc
