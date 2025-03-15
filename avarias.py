@@ -67,6 +67,17 @@ def top_10_por_valor_custo(df):
     top_10_custo = df.groupby('DESCRIÇÃO').agg({'VLR. TOT. CUSTO': 'sum'}).sort_values(by='VLR. TOT. CUSTO', ascending=False).head(10)
     return top_10_custo
 
+# Nova função para resumo de avarias
+def resumo_avarias(df):
+    # Agrupar por 'DESCRIÇÃO', somando QTD e valores totais, e pegando o primeiro 'Código Interno'
+    resumo = df.groupby('DESCRIÇÃO').agg({
+        'QTD': 'sum',
+        'VLR. TOT. VENDA': 'sum',
+        'VLR. TOT. CUSTO': 'sum',
+        'CÓD. INT.': 'first'  # Assume que 'Código Interno' é o nome da coluna
+    }).reset_index()
+    return resumo
+
 # Interface do Streamlit
 def app():
     st.title("Dashboard de Avarias")
@@ -150,8 +161,8 @@ def app():
     else:
         st.markdown("### Nenhum dado disponível para Custo Total")
     
-    # Exibir tabela de avarias
-    st.markdown("### Tabela de Avarias")
+    # Exibir tabela de avarias detalhada
+    st.markdown("### Tabela de Avarias Detalhada")
     df_filtrado_exibicao = df_filtrado[['DATA', 'DESCRIÇÃO', 'QTD', 'VLR. UNIT. VENDA', 'VLR. UNIT. CUSTO', 'VLR. TOT. VENDA', 'VLR. TOT. CUSTO']].copy()
 
     # Criar novas colunas para exibição formatada
@@ -160,8 +171,19 @@ def app():
     df_filtrado_exibicao['VLR. TOT. VENDA (R$)'] = df_filtrado_exibicao['VLR. TOT. VENDA'].apply(lambda x: f"R$ {x:,.2f}" if pd.notna(x) else "R$ 0,00")
     df_filtrado_exibicao['VLR. TOT. CUSTO (R$)'] = df_filtrado_exibicao['VLR. TOT. CUSTO'].apply(lambda x: f"R$ {x:,.2f}" if pd.notna(x) else "R$ 0,00")
 
-    # Exibir tabela formatada
+    # Exibir tabela detalhada
     st.dataframe(df_filtrado_exibicao[['DATA', 'DESCRIÇÃO', 'QTD', 'VLR. UNIT. VENDA (R$)', 'VLR. UNIT. CUSTO (R$)', 'VLR. TOT. VENDA (R$)', 'VLR. TOT. CUSTO (R$)']])
+
+    # Exibir tabela de resumo
+    st.markdown("### Tabela de Avarias - Resumo")
+    df_resumo = resumo_avarias(df_filtrado)
+    
+    # Formatando valores monetários para exibição
+    df_resumo['VLR. TOT. VENDA (R$)'] = df_resumo['VLR. TOT. VENDA'].apply(lambda x: f"R$ {x:,.2f}" if pd.notna(x) else "R$ 0,00")
+    df_resumo['VLR. TOT. CUSTO (R$)'] = df_resumo['VLR. TOT. CUSTO'].apply(lambda x: f"R$ {x:,.2f}" if pd.notna(x) else "R$ 0,00")
+
+    # Exibir a tabela de resumo com 'Código Interno' como terceira coluna
+    st.dataframe(df_resumo[['DESCRIÇÃO', 'QTD', 'CÓD. INT.', 'VLR. TOT. VENDA (R$)', 'VLR. TOT. CUSTO (R$)']])
 
 if __name__ == "__main__":
     app()
