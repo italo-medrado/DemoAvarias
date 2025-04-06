@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 from datetime import datetime
 
 # Carregar dados
-file_path = r"./data/SISTEMA DE GESTÃO DE AVARIAS PREVENÇÃO - FRAGA MAIA.xlsm"
+file_path = r"./data/SISTEMA DE GESTÃO DE AVARIAS PREVENÇÃO - FRAGA MAIA.xlsx"
 xls = pd.ExcelFile(file_path)
 
 # Folhas disponíveis
